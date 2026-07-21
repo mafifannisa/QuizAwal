@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uji Cepat Matematika</title>
+    <meta name="description" content="Aplikasi ujian matematika dasar dengan batas waktu.">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-animation"></div>
+    <div class="app-container glass-panel">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <h1>Uji Cepat <span>Matematika</span></h1>
+            <p>Uji kemampuanmu dalam penjumlahan, pengurangan, perkalian, dan pembagian (Bilangan Bulat, Desimal, dan Pecahan).</p>
+            <div class="rules-box" style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 0.9rem; text-align: left;">
+                <strong style="color: var(--primary);">Aturan Skor:</strong>
+                <ul style="margin: 5px 0 0 20px; padding: 0; line-height: 1.4;">
+                    <li>Benar: <span style="color: var(--success); font-weight: bold;">+10</span> Poin</li>
+                    <li>Salah: <span style="color: var(--danger); font-weight: bold;">-2</span> Poin</li>
+                    <li>Waktu Habis (2 Menit): Otomatis lanjut soal berikutnya</li>
+                </ul>
+            </div>
+            <div class="input-group">
+                <label for="student-name">Nama Siswa:</label>
+                <input type="text" id="student-name" placeholder="Masukkan nama" required style="text-transform: uppercase;">
+            </div>
+            <div class="input-group">
+                <label for="student-absen">Nomor Absen:</label>
+                <input type="number" id="student-absen" placeholder="Masukkan nomor absen" required>
+            </div>
+            <button id="btn-start" class="btn-primary">Mulai Ujian</button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div class="header">
+                <div class="timer">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span id="time-display">02:00</span>
+                </div>
+                <div class="question-counter" style="font-weight: 600; font-size: 1.1rem; color: var(--primary);">Soal: <span id="question-number">1</span>/10</div>
+                <div class="score">Skor: <span id="current-score">0</span></div>
+            </div>
+            <div class="question-container">
+                <h2 id="question-text">1/2 + 3/4 = ?</h2>
+            </div>
+            <div class="answer-container">
+                <input type="text" id="answer-input" placeholder="Jawaban (mis: 1.5 atau 3/4)" autocomplete="off">
+                <button id="btn-submit" class="btn-primary">Jawab</button>
+            </div>
+            <div id="feedback" class="feedback"></div>
+        </div>
+
+        <!-- End Screen -->
+        <div id="end-screen" class="screen">
+            <h2>Waktu Habis!</h2>
+            <div class="final-results">
+                <p>Skor Akhir: <span id="final-score" class="highlight">0</span></p>
+                <p>Benar: <span id="correct-count">0</span> | Salah: <span id="wrong-count">0</span></p>
+            </div>
+            <button id="btn-restart" class="btn-primary">Main Lagi</button>
+        </div>
+    </div>
+    <script src="node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script src="app.js?v=2"></script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+/* Styles specific to Admin Panel */
+.admin-panel {
+    max-width: 800px;
+    width: 95%;
+}
+
+.admin-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.admin-actions button {
+    width: 48%;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(225, 29, 72, 0.3);
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(225, 29, 72, 0.4);
+}
+
+.btn-danger:active {
+    transform: translateY(1px);
+}
+
+.table-container {
+    overflow-x: auto;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+    padding: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+th {
+    background-color: rgba(99, 102, 241, 0.1);
+    color: var(--text-color);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}

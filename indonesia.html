@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lagu Kebangsaan & Nasional Indonesia</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+    <style>
+        .song-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .song-title {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .song-title h1 {
+            margin-bottom: 5px;
+            font-size: 2.5rem;
+        }
+        .song-title p {
+            margin-bottom: 0;
+            font-size: 1.1rem;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+        .player-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        .player-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        .lyrics {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #fff;
+            max-height: 350px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .loading {
+            text-align: center;
+            font-size: 1.5rem;
+            padding: 50px 0;
+            color: var(--primary);
+        }
+        .nav-buttons {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation"></div>
+    <div class="app-container glass-panel" style="max-width: 800px; max-height: 95vh; overflow-y: auto;">
+        
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Memilih Lagu...
+        </div>
+
+        <div id="song-content" style="display: none;">
+            <div class="song-title">
+                <h1 id="song-name">Judul Lagu</h1>
+                <p id="song-creator">Pencipta</p>
+            </div>
+            
+            <div class="song-container">
+                <!-- YouTube Music Player -->
+                <div class="player-wrapper">
+                    <iframe id="youtube-player" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+
+                <!-- Lyrics -->
+                <div class="lyrics" id="lyrics-container">
+                    Memuat Lirik...
+                </div>
+
+                <div class="nav-buttons">
+                    <button onclick="location.reload()" class="btn-primary" style="width: auto; padding: 12px 24px; font-size: 1rem;"><i class="fas fa-random"></i> Acak Lagu Lain</button>
+                    <a href="index.html" class="btn-primary" style="background: var(--danger); text-decoration: none; width: auto; padding: 12px 24px; font-size: 1rem;"><i class="fas fa-arrow-left"></i> Kembali ke Kuis</a>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        const songs = [
+            {
+                title: "Indonesia Raya",
+                creator: "Ciptaan: W.R. Supratman",
+                youtube: "https://www.youtube.com/embed/UuPaS81n0xg?autoplay=1",
+                lyrics: `Indonesia tanah airku,
+Tanah tumpah darahku,
+Di sanalah aku berdiri,
+Jadi pandu ibuku.
+
+Indonesia kebangsaanku,
+Bangsa dan tanah airku,
+Marilah kita berseru,
+Indonesia bersatu.
+
+Hiduplah tanahku,
+Hiduplah negeriku,
+Bangsaku, Rakyatku, semuanya,
+Bangunlah jiwanya,
+Bangunlah badannya,
+Untuk Indonesia Raya.
+
+Indonesia Raya,
+Merdeka, merdeka,
+Tanahku, negeriku yang kucinta!
+Indonesia Raya,
+Merdeka, merdeka,
+Hiduplah Indonesia Raya.`
+            },
+            {
+                title: "Bagimu Negeri",
+                creator: "Ciptaan: Kusbini",
+                youtube: "https://www.youtube.com/embed/5uDjVyawLPA?autoplay=1",
+                lyrics: `Padamu negeri kami berjanji
+Padamu negeri kami berbakti
+Padamu negeri kami mengabdi
+Bagimu negeri jiwa raga kami`
+            },
+            {
+                title: "Garuda Pancasila",
+                creator: "Ciptaan: Sudharnoto",
+                youtube: "https://www.youtube.com/embed/JTZhCGbsCSI?autoplay=1",
+                lyrics: `Garuda Pancasila
+Akulah pendukungmu
+Patriot proklamasi
+Sedia berkorban untukmu
+
+Pancasila dasar negara
+Rakyat adil makmur sentosa
+Pribadi bangsaku
+
+Ayo maju maju
+Ayo maju maju
+Ayo maju maju`
+            },
+            {
+                title: "Hari Merdeka (17 Agustus 1945)",
+                creator: "Ciptaan: H. Mutahar",
+                youtube: "https://www.youtube.com/embed/di7fRJA-A-E?autoplay=1",
+                lyrics: `Tujuh belas agustus tahun empat lima
+Itulah hari kemerdekaan kita
+Hari merdeka nusa dan bangsa
+Hari lahirnya bangsa Indonesia
+Merdeka
+
+Sekali merdeka tetap merdeka
+Selama hayat masih dikandung badan
+Kita tetap setia tetap sedia
+Mempertahankan Indonesia
+Kita tetap setia tetap sedia
+Membela negara kita`
+            },
+            {
+                title: "Mengheningkan Cipta",
+                creator: "Ciptaan: Truno Prawit",
+                youtube: "https://www.youtube.com/embed/bh3-w5DDEmA?autoplay=1",
+                lyrics: `Dengan seluruh angkasa raya memuji
+Pahlawan negara
+Nan gugur remaja diribaan bendera
+Bela nusa bangsa
+
+Kau kukenang wahai bunga putra bangsa
+Harga jasa
+Kau Cahya pelita
+Bagi Indonesia merdeka`
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Pilih lagu secara acak
+            const randomIndex = Math.floor(Math.random() * songs.length);
+            const selectedSong = songs[randomIndex];
+
+            // Sembunyikan loading dan tampilkan konten
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('song-content').style.display = 'block';
+
+                // Isi data lagu
+                document.getElementById('song-name').textContent = selectedSong.title;
+                document.getElementById('song-creator').textContent = selectedSong.creator;
+                document.getElementById('youtube-player').src = selectedSong.youtube;
+                document.getElementById('lyrics-container').textContent = selectedSong.lyrics;
+            }, 800); // Sedikit delay agar efek loading terlihat
+        });
+    </script>
+</body>
+</html>

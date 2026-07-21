@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acak Surah Juz 30</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+    <style>
+        .surah-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: right;
+            padding-right: 15px;
+        }
+        .surah-title {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .surah-title h1 {
+            margin-bottom: 5px;
+            font-size: 2.5rem;
+        }
+        .surah-title p {
+            margin-bottom: 0;
+            font-size: 1.1rem;
+        }
+        .ayah {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: background 0.3s;
+        }
+        .ayah:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .ayah-arabic {
+            font-size: 2rem;
+            line-height: 2.5;
+            color: #fff;
+            font-family: 'Amiri', serif; /* Good font for Arabic */
+        }
+        .ayah-translation {
+            font-size: 1rem;
+            color: var(--text-muted);
+            text-align: left;
+            margin-top: 10px;
+        }
+        .ayah-number {
+            display: inline-block;
+            background: var(--primary);
+            color: #fff;
+            width: 35px;
+            height: 35px;
+            line-height: 35px;
+            text-align: center;
+            border-radius: 50%;
+            font-size: 1rem;
+            margin-left: 15px;
+        }
+        .loading {
+            text-align: center;
+            font-size: 1.5rem;
+            padding: 50px 0;
+            color: var(--primary);
+        }
+        /* Import Google font for Arabic */
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+    </style>
+</head>
+<body>
+    <div class="background-animation"></div>
+    <div class="app-container glass-panel" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+        
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Mencari Surah...
+        </div>
+
+        <div id="surah-content" style="display: none;">
+            <div class="surah-title">
+                <h1 id="surah-name-ar">Nama Surah</h1>
+                <p id="surah-name-id">Arti Surah</p>
+                <div style="margin-top: 15px;">
+                    <button onclick="location.reload()" class="btn-primary" style="width: auto; padding: 10px 20px; font-size: 1rem;"><i class="fas fa-random"></i> Acak Surah Lain</button>
+                    <a href="index.html" class="btn-primary" style="background: var(--secondary); text-decoration: none; width: auto; padding: 10px 20px; font-size: 1rem; display: inline-block; margin-left: 10px;"><i class="fas fa-arrow-left"></i> Kembali ke Kuis</a>
+                </div>
+            </div>
+            
+            <div id="ayahs-list" class="surah-container">
+                <!-- Ayat akan dimuat di sini -->
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Juz 30 consists of Surahs 78 (An-Naba) to 114 (An-Nas)
+            const minSurah = 78;
+            const maxSurah = 114;
+            const randomSurahId = Math.floor(Math.random() * (maxSurah - minSurah + 1)) + minSurah;
+
+            // Fetch Arabic text
+            fetch(`https://api.alquran.cloud/v1/surah/${randomSurahId}`)
+                .then(response => response.json())
+                .then(dataAr => {
+                    // Fetch Indonesian translation
+                    fetch(`https://api.alquran.cloud/v1/surah/${randomSurahId}/id.indonesian`)
+                        .then(response => response.json())
+                        .then(dataId => {
+                            displaySurah(dataAr.data, dataId.data);
+                        });
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('loading').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Gagal memuat surah. Periksa koneksi internet Anda.';
+                    document.getElementById('loading').style.color = 'var(--danger)';
+                });
+
+            function displaySurah(surahAr, surahId) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('surah-content').style.display = 'block';
+
+                document.getElementById('surah-name-ar').textContent = surahAr.name;
+                document.getElementById('surah-name-id').textContent = `${surahAr.englishName} (${surahId.englishNameTranslation}) - ${surahAr.numberOfAyahs} Ayat`;
+
+                const ayahsList = document.getElementById('ayahs-list');
+                let html = '';
+
+                // Bismillah handling (except Al-Fatihah or At-Tawbah, though neither are in Juz 30)
+                if (randomSurahId !== 1 && randomSurahId !== 9) {
+                    html += `
+                        <div style="text-align: center; font-size: 2rem; font-family: 'Amiri', serif; margin-bottom: 30px;">
+                            بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+                        </div>
+                    `;
+                }
+
+                for (let i = 0; i < surahAr.ayahs.length; i++) {
+                    let arabicText = surahAr.ayahs[i].text;
+                    let indoText = surahId.ayahs[i].text;
+                    let ayahNum = surahAr.ayahs[i].numberInSurah;
+
+                    // Remove Bismillah from the first verse if it's there (api.alquran.cloud prepends it)
+                    if (i === 0 && randomSurahId !== 1) {
+                        arabicText = arabicText.replace('بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ ', '');
+                        arabicText = arabicText.replace('بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ', '');
+                    }
+
+                    html += `
+                        <div class="ayah">
+                            <div class="ayah-arabic">
+                                ${arabicText} <span class="ayah-number">${ayahNum}</span>
+                            </div>
+                            <div class="ayah-translation">
+                                <strong>${ayahNum}.</strong> ${indoText}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                ayahsList.innerHTML = html;
+            }
+        });
+    </script>
+</body>
+</html>

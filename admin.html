@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin - Nilai Siswa</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+</head>
+<body>
+    <div class="background-animation"></div>
+    <div class="app-container glass-panel admin-panel" style="max-width: 1000px;">
+        <h1>Panel Admin <span>Guru</span></h1>
+        <p>Pantau nilai siswa secara real-time dari seluruh perangkat yang terhubung ke server.</p>
+        
+        <div class="admin-actions">
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <button id="btn-refresh" class="btn-primary" style="display: flex; align-items: center; gap: 8px;"><i class="fas fa-sync-alt"></i> Muat Ulang</button>
+                <button id="btn-export" class="btn-primary" style="background: var(--success); display: flex; align-items: center; gap: 8px;"><i class="fas fa-file-excel"></i> Export Excel</button>
+                <select id="sort-select" style="padding: 12px 15px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.9); color: var(--text-color); font-family: 'Outfit', sans-serif; font-weight: 600; cursor: pointer; outline: none; height: 100%;">
+                    <option value="time-desc">Waktu (Terbaru)</option>
+                    <option value="time-asc">Waktu (Terlama)</option>
+                    <option value="score-desc">Nilai (Tertinggi)</option>
+                    <option value="score-asc">Nilai (Terendah)</option>
+                </select>
+            </div>
+            <button id="btn-clear" class="btn-danger" style="width: auto; display: flex; align-items: center; gap: 8px;"><i class="fas fa-trash-alt"></i> Hapus Semua Data</button>
+        </div>
+
+        <div class="table-container">
+            <table id="results-table">
+                <thead>
+                    <tr>
+                        <th>Waktu Selesai</th>
+                        <th>No. Absen</th>
+                        <th>Nama Siswa</th>
+                        <th>Jml Benar</th>
+                        <th>Jml Salah</th>
+                        <th>Nilai Benar</th>
+                        <th>Nilai Salah</th>
+                        <th>Nilai Total</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="results-body">
+                    <!-- Data akan diisi oleh JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div style="margin-top: 20px; text-align: center;">
+            <a href="index.html" style="color: var(--primary); text-decoration: none;">&larr; Kembali ke Kuis</a>
+        </div>
+    </div>
+    <script src="node_modules/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
