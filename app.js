@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const studentNameInput = document.getElementById('student-name');
     const studentAbsenInput = document.getElementById('student-absen');
+    const studentKelasInput = document.getElementById('student-kelas');
     const btnStart = document.getElementById('btn-start');
     const btnSubmit = document.getElementById('btn-submit');
     const btnRestart = document.getElementById('btn-restart');
@@ -32,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentScreenId = 'start-screen';
     let studentName = '';
     let studentAbsen = '';
+    let studentKelas = '';
     let currentQuestionIndex = 1;
     let detailedAnswers = [];
     let currentQuestionText = '';
@@ -55,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
             currentScreenId,
             studentName,
             studentAbsen,
+            studentKelas,
             currentQuestionIndex,
             detailedAnswers,
             currentQuestionText
@@ -74,12 +77,14 @@ document.addEventListener('DOMContentLoaded', () => {
             currentScreenId = state.currentScreenId;
             studentName = state.studentName || '';
             studentAbsen = state.studentAbsen || '';
+            studentKelas = state.studentKelas || '';
             currentQuestionIndex = state.currentQuestionIndex || 1;
             detailedAnswers = state.detailedAnswers || [];
             currentQuestionText = state.currentQuestionText || '';
             
             if (studentName) studentNameInput.value = studentName;
             if (studentAbsen) studentAbsenInput.value = studentAbsen;
+            if (studentKelas) studentKelasInput.value = studentKelas;
             
             if (currentScreenId === 'quiz-screen') {
                 if (questionNumberEl) questionNumberEl.textContent = currentQuestionIndex;
@@ -180,7 +185,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             qText = `${a} ${op.replace('*','×').replace('/','÷')} ${b}`;
-            ans = eval(`${a} ${op} ${b}`).toString();
+            
+            let rawAns;
+            switch(op) {
+                case '+': rawAns = a + b; break;
+                case '-': rawAns = a - b; break;
+                case '*': rawAns = a * b; break;
+                case '/': rawAns = a / b; break;
+            }
+            ans = rawAns.toString();
         } 
         else if (type === 'decimal') {
             let a = (Math.random() * 10).toFixed(1);
@@ -256,15 +269,17 @@ document.addEventListener('DOMContentLoaded', () => {
     btnStart.addEventListener('click', async () => {
         studentName = studentNameInput.value.trim().toUpperCase();
         studentAbsen = studentAbsenInput.value.trim();
-        if (!studentName || !studentAbsen) {
+        studentKelas = studentKelasInput.value.trim().toUpperCase();
+        if (!studentName || !studentAbsen || !studentKelas) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Data Belum Lengkap',
-                text: 'Silakan masukkan Nama dan Nomor Absen Anda sebelum memulai ujian!',
+                text: 'Silakan masukkan Nama, Nomor Absen, dan Kelas Anda sebelum memulai ujian!',
                 confirmButtonColor: 'var(--primary)'
             }).then(() => {
                 if (!studentName) studentNameInput.focus();
-                else studentAbsenInput.focus();
+                else if (!studentAbsen) studentAbsenInput.focus();
+                else studentKelasInput.focus();
             });
             return;
         }
@@ -273,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnStart.textContent = 'Mengecek...';
 
         try {
-            const response = await fetch(`/api/check?name=${encodeURIComponent(studentName)}&absen=${encodeURIComponent(studentAbsen)}`);
+            const response = await fetch(`/api/check?name=${encodeURIComponent(studentName)}&absen=${encodeURIComponent(studentAbsen)}&kelas=${encodeURIComponent(studentKelas)}`);
             const data = await response.json();
             
             if (data.exists) {
@@ -339,9 +354,25 @@ document.addEventListener('DOMContentLoaded', () => {
         userAns = userAns.replace(',', '.');
         
         let isCorrect = false;
+        let isPartial = false;
+        
         if (currentAnswer.includes('/')) {
             // Check fraction string explicitly
-            isCorrect = (userAns === currentAnswer);
+            if (userAns === currentAnswer) {
+                isCorrect = true;
+            } else if (userAns.includes('/')) {
+                const partsU = userAns.split('/');
+                const partsC = currentAnswer.split('/');
+                if (partsU.length === 2 && partsC.length === 2) {
+                    const uNum = parseFloat(partsU[0]);
+                    const uDen = parseFloat(partsU[1]);
+                    const cNum = parseFloat(partsC[0]);
+                    const cDen = parseFloat(partsC[1]);
+                    if (!isNaN(uNum) && !isNaN(uDen) && uDen !== 0 && cDen !== 0 && (uNum / uDen === cNum / cDen)) {
+                        isPartial = true;
+                    }
+                }
+            }
         } else {
             // Check numeric value for integers/decimals
             isCorrect = (parseFloat(userAns) === parseFloat(currentAnswer));
@@ -352,6 +383,11 @@ document.addEventListener('DOMContentLoaded', () => {
             correctCount++;
             feedbackEl.textContent = 'Benar! +10';
             feedbackEl.className = 'feedback correct';
+        } else if (isPartial) {
+            score += 5;
+            correctCount++;
+            feedbackEl.textContent = 'Benar (Belum Sederhana)! +5';
+            feedbackEl.className = 'feedback partial';
         } else {
             score -= 2; // Penalty for wrong answer
             wrongCount++;
@@ -363,7 +399,7 @@ document.addEventListener('DOMContentLoaded', () => {
             questionText: currentQuestionText,
             studentAnswer: userAns,
             correctAnswer: currentAnswer,
-            isCorrect: isCorrect
+            isCorrect: isCorrect || isPartial
         });
         
         currentScoreEl.textContent = score;
@@ -397,6 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({
                 name: studentName,
                 absen: studentAbsen,
+                kelas: studentKelas,
                 score: score,
                 correctCount: correctCount,
                 wrongCount: wrongCount,

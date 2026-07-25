@@ -15,23 +15,35 @@
         <div id="start-screen" class="screen active">
             <h1>Uji Cepat <span>Matematika</span></h1>
             <p>Uji kemampuanmu dalam penjumlahan, pengurangan, perkalian, dan pembagian (Bilangan Bulat, Desimal, dan Pecahan).</p>
-            <div class="rules-box" style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 0.9rem; text-align: left;">
-                <strong style="color: var(--primary);">Aturan Skor:</strong>
-                <ul style="margin: 5px 0 0 20px; padding: 0; line-height: 1.4;">
-                    <li>Benar: <span style="color: var(--success); font-weight: bold;">+10</span> Poin</li>
-                    <li>Salah: <span style="color: var(--danger); font-weight: bold;">-2</span> Poin</li>
-                    <li>Waktu Habis (2 Menit): Otomatis lanjut soal berikutnya</li>
-                </ul>
+            
+            <div class="start-grid">
+                <div class="rules-column">
+                    <div class="rules-box">
+                        <strong style="color: var(--primary); font-size: 1.1rem; display: block; margin-bottom: 10px;">Aturan Skor:</strong>
+                        <ul style="margin: 0 0 0 20px; padding: 0; line-height: 1.6; color: var(--text-muted);">
+                            <li>Benar: <span style="color: var(--success); font-weight: bold;">+10</span> Poin</li>
+                            <li>Salah: <span style="color: var(--danger); font-weight: bold;">-2</span> Poin</li>
+                            <li>Waktu Habis (2 Menit): Otomatis lanjut soal berikutnya</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="form-column">
+                    <div class="input-group">
+                        <label for="student-name">Nama Siswa:</label>
+                        <input type="text" id="student-name" placeholder="Masukkan nama" required style="text-transform: uppercase;">
+                    </div>
+                    <div class="input-group">
+                        <label for="student-absen">Nomor Absen:</label>
+                        <input type="number" id="student-absen" placeholder="Masukkan nomor absen" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="student-kelas">Kelas (misal: 7A):</label>
+                        <input type="text" id="student-kelas" placeholder="Masukkan kelas" required style="text-transform: uppercase;">
+                    </div>
+                    <button id="btn-start" class="btn-primary">Mulai Ujian</button>
+                </div>
             </div>
-            <div class="input-group">
-                <label for="student-name">Nama Siswa:</label>
-                <input type="text" id="student-name" placeholder="Masukkan nama" required style="text-transform: uppercase;">
-            </div>
-            <div class="input-group">
-                <label for="student-absen">Nomor Absen:</label>
-                <input type="number" id="student-absen" placeholder="Masukkan nomor absen" required>
-            </div>
-            <button id="btn-start" class="btn-primary">Mulai Ujian</button>
         </div>
 
         <!-- Quiz Screen -->

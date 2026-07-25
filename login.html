@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Admin - Math Quiz</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 80px auto;
+            text-align: center;
+        }
+        .login-input {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.6);
+            font-family: inherit;
+            font-size: 1.1rem;
+            box-sizing: border-box;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .login-input:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 0 4px rgba(74, 0, 224, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation"></div>
+    <div class="app-container glass-panel login-container">
+        <h1 style="margin-bottom: 10px;">Login <span>Admin</span></h1>
+        <p style="color: var(--secondary); margin-bottom: 30px;">Silakan masukkan password untuk mengakses panel admin.</p>
+        
+        <form id="login-form">
+            <input type="password" id="password-input" class="login-input" placeholder="Password Admin" required autofocus>
+            <button type="submit" class="btn-primary" id="btn-login" style="width: 100%;">Masuk <i class="fas fa-sign-in-alt"></i></button>
+        </form>
+        
+        <div style="margin-top: 25px;">
+            <a href="index.html" style="color: var(--primary); text-decoration: none; font-weight: 600;">&larr; Kembali ke Beranda</a>
+        </div>
+    </div>
+    
+    <script src="node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script src="login.js"></script>
+</body>
+</html>

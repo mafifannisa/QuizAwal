@@ -11,7 +11,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalStudentName = document.getElementById('modal-student-name');
     const modalAnswersContainer = document.getElementById('modal-answers-container');
     
+    // Pagination Elements
+    const itemsPerPageSelect = document.getElementById('items-per-page-select');
+    const btnPrevPage = document.getElementById('btn-prev-page');
+    const btnNextPage = document.getElementById('btn-next-page');
+    const pageIndicator = document.getElementById('page-indicator');
+    const pageStart = document.getElementById('page-start');
+    const pageEnd = document.getElementById('page-end');
+    const totalItems = document.getElementById('total-items');
+
+    // Pagination state
+    let currentPage = 1;
+    let itemsPerPage = 10;
+    
     const API_URL = '/api/results';
+    const token = localStorage.getItem('adminToken');
+    
+    if (!token) {
+        window.location.href = 'login.html';
+        return;
+    }
+    
+    const btnLogout = document.getElementById('btn-logout');
+    if (btnLogout) {
+        btnLogout.addEventListener('click', () => {
+            localStorage.removeItem('adminToken');
+            window.location.href = 'login.html';
+        });
+    }
     
     // Store data locally for modal access
     let globalData = [];
@@ -19,8 +46,19 @@ document.addEventListener('DOMContentLoaded', () => {
     function fetchResults() {
         resultsBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Memuat data...</td></tr>';
         
-        fetch(API_URL)
-            .then(response => response.json())
+        fetch(API_URL, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                if (response.status === 401 || response.status === 403) {
+                    localStorage.removeItem('adminToken');
+                    window.location.href = 'login.html';
+                    throw new Error('Unauthorized');
+                }
+                return response.json();
+            })
             .then(data => {
                 globalData = data;
                 renderTable();
@@ -36,6 +74,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (globalData.length === 0) {
             resultsBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px; color: var(--text-muted);">Belum ada data nilai.</td></tr>';
+            if (totalItems) totalItems.textContent = '0';
+            if (pageStart) pageStart.textContent = '0';
+            if (pageEnd) pageEnd.textContent = '0';
+            if (pageIndicator) pageIndicator.textContent = 'Halaman 1';
+            if (btnPrevPage) btnPrevPage.disabled = true;
+            if (btnNextPage) btnNextPage.disabled = true;
             return;
         }
         
@@ -53,7 +97,31 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
-        sortedData.forEach(result => {
+        // Pagination logic
+        const total = sortedData.length;
+        if (itemsPerPageSelect && itemsPerPageSelect.value === 'all') {
+            itemsPerPage = total;
+        } else if (itemsPerPageSelect) {
+            itemsPerPage = parseInt(itemsPerPageSelect.value) || 10;
+        }
+        
+        const maxPage = Math.ceil(total / itemsPerPage);
+        if (currentPage > maxPage && maxPage > 0) currentPage = maxPage;
+        
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, total);
+        const paginatedData = sortedData.slice(startIndex, endIndex);
+        
+        // Update Pagination UI
+        if (totalItems) totalItems.textContent = total;
+        if (pageStart) pageStart.textContent = total === 0 ? 0 : startIndex + 1;
+        if (pageEnd) pageEnd.textContent = endIndex;
+        if (pageIndicator) pageIndicator.textContent = `Halaman ${currentPage} / ${maxPage || 1}`;
+        
+        if (btnPrevPage) btnPrevPage.disabled = currentPage === 1;
+        if (btnNextPage) btnNextPage.disabled = currentPage === maxPage || maxPage === 0;
+        
+        paginatedData.forEach(result => {
             const tr = document.createElement('tr');
             
             const dateObj = new Date(result.timestamp);
@@ -91,7 +159,16 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             session.answers.forEach((ans, index) => {
                 const card = document.createElement('div');
-                card.className = `answer-card ${ans.is_correct ? 'correct' : 'wrong'}`;
+                let isPartial = false;
+                if (ans.is_correct && ans.student_answer && ans.correct_answer && String(ans.student_answer).trim() !== String(ans.correct_answer).trim()) {
+                    isPartial = true;
+                }
+                
+                let cardClass = ans.is_correct ? (isPartial ? 'partial' : 'correct') : 'wrong';
+                let badgeClass = ans.is_correct ? (isPartial ? 'badge-partial' : 'badge-correct') : 'badge-wrong';
+                let badgeText = ans.is_correct ? (isPartial ? 'Kurang Tepat' : 'Benar') : 'Salah';
+                
+                card.className = `answer-card ${cardClass}`;
                 
                 card.innerHTML = `
                     <div class="q-num">Pertanyaan ${index + 1}</div>
@@ -105,8 +182,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="ans-value">${ans.correct_answer}</span>
                     </div>
                     <div style="margin-top: 10px; text-align: right;">
-                        <span class="badge ${ans.is_correct ? 'badge-correct' : 'badge-wrong'}">
-                            ${ans.is_correct ? 'Benar' : 'Salah'}
+                        <span class="badge ${badgeClass}">
+                            ${badgeText}
                         </span>
                     </div>
                 `;
@@ -134,9 +211,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }).then((result) => {
             if (result.isConfirmed) {
                 fetch(API_URL, {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (response.status === 401 || response.status === 403) {
+                        localStorage.removeItem('adminToken');
+                        window.location.href = 'login.html';
+                        throw new Error('Unauthorized');
+                    }
+                    return response.json();
+                })
                 .then(() => {
                     fetchResults();
                     Swal.fire('Terhapus!', 'Data berhasil dihapus.', 'success');
@@ -180,7 +267,39 @@ document.addEventListener('DOMContentLoaded', () => {
     btnRefresh.addEventListener('click', fetchResults);
     btnClear.addEventListener('click', clearResults);
     btnExport.addEventListener('click', exportToExcel);
-    sortSelect.addEventListener('change', renderTable);
+    
+    sortSelect.addEventListener('change', () => {
+        currentPage = 1;
+        renderTable();
+    });
+    
+    if (itemsPerPageSelect) {
+        itemsPerPageSelect.addEventListener('change', (e) => {
+            const val = e.target.value;
+            itemsPerPage = val === 'all' ? globalData.length : parseInt(val);
+            currentPage = 1;
+            renderTable();
+        });
+    }
+
+    if (btnPrevPage) {
+        btnPrevPage.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        });
+    }
+
+    if (btnNextPage) {
+        btnNextPage.addEventListener('click', () => {
+            const maxPage = Math.ceil(globalData.length / itemsPerPage);
+            if (currentPage < maxPage) {
+                currentPage++;
+                renderTable();
+            }
+        });
+    }
     
     btnCloseModal.addEventListener('click', closeModal);
     detailModal.addEventListener('click', (e) => {
@@ -204,9 +323,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }).then((result) => {
                 if (result.isConfirmed) {
                     fetch(`${API_URL}/${encodeURIComponent(id)}`, {
-                        method: 'DELETE'
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
                     })
-                    .then(response => response.json())
+                    .then(response => {
+                        if (response.status === 401 || response.status === 403) {
+                            localStorage.removeItem('adminToken');
+                            window.location.href = 'login.html';
+                            throw new Error('Unauthorized');
+                        }
+                        return response.json();
+                    })
                     .then(() => {
                         fetchResults();
                         Swal.fire('Terhapus!', 'Data siswa berhasil dihapus.', 'success');
