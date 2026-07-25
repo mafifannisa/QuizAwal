@@ -33,6 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let studentName = '';
     let studentAbsen = '';
     let currentQuestionIndex = 1;
+    let detailedAnswers = [];
+    let currentQuestionText = '';
     const TOTAL_QUESTIONS = 10;
     const TIME_PER_QUESTION = 120; // 2 minutes
 
@@ -53,7 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
             currentScreenId,
             studentName,
             studentAbsen,
-            currentQuestionIndex
+            currentQuestionIndex,
+            detailedAnswers,
+            currentQuestionText
         };
         sessionStorage.setItem('quizState', JSON.stringify(state));
     }
@@ -71,6 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
             studentName = state.studentName || '';
             studentAbsen = state.studentAbsen || '';
             currentQuestionIndex = state.currentQuestionIndex || 1;
+            detailedAnswers = state.detailedAnswers || [];
+            currentQuestionText = state.currentQuestionText || '';
             
             if (studentName) studentNameInput.value = studentName;
             if (studentAbsen) studentAbsenInput.value = studentAbsen;
@@ -234,6 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         questionText.innerHTML = qText + note;
         currentAnswer = ans;
+        currentQuestionText = qText;
         
         timeLeft = TIME_PER_QUESTION;
         updateTimeDisplay();
@@ -291,6 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
         correctCount = 0;
         wrongCount = 0;
         currentQuestionIndex = 1;
+        detailedAnswers = [];
         if (questionNumberEl) questionNumberEl.textContent = currentQuestionIndex;
         
         currentScoreEl.textContent = score;
@@ -351,6 +359,13 @@ document.addEventListener('DOMContentLoaded', () => {
             feedbackEl.className = 'feedback wrong';
         }
         
+        detailedAnswers.push({
+            questionText: currentQuestionText,
+            studentAnswer: userAns,
+            correctAnswer: currentAnswer,
+            isCorrect: isCorrect
+        });
+        
         currentScoreEl.textContent = score;
         isWaiting = true;
         saveState();
@@ -384,7 +399,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 absen: studentAbsen,
                 score: score,
                 correctCount: correctCount,
-                wrongCount: wrongCount
+                wrongCount: wrongCount,
+                answers: detailedAnswers
             })
         }).catch(err => console.error('Error saving result:', err));
     }

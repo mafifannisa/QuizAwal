@@ -3,30 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Admin - Nilai Siswa</title>
+    <title>Panel Admin Premium - Nilai Siswa</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="admin.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.min.css">
 </head>
 <body>
     <div class="background-animation"></div>
-    <div class="app-container glass-panel admin-panel" style="max-width: 1000px;">
-        <h1>Panel Admin <span>Guru</span></h1>
-        <p>Pantau nilai siswa secara real-time dari seluruh perangkat yang terhubung ke server.</p>
+    <div class="admin-panel">
+        <div class="admin-header">
+            <h1>Panel Admin <span>Guru</span></h1>
+            <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 5px;">
+                <i class="fas fa-arrow-left"></i> Kembali ke Kuis
+            </a>
+        </div>
+        
+        <p style="color: var(--text-muted); margin-bottom: 25px; font-size: 1.05rem;">Pantau nilai dan analisis jawaban siswa secara real-time.</p>
         
         <div class="admin-actions">
-            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                <button id="btn-refresh" class="btn-primary" style="display: flex; align-items: center; gap: 8px;"><i class="fas fa-sync-alt"></i> Muat Ulang</button>
-                <button id="btn-export" class="btn-primary" style="background: var(--success); display: flex; align-items: center; gap: 8px;"><i class="fas fa-file-excel"></i> Export Excel</button>
-                <select id="sort-select" style="padding: 12px 15px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.9); color: var(--text-color); font-family: 'Outfit', sans-serif; font-weight: 600; cursor: pointer; outline: none; height: 100%;">
+            <div class="action-group">
+                <button id="btn-refresh" class="btn-premium primary">
+                    <i class="fas fa-sync-alt"></i> Muat Ulang
+                </button>
+                <button id="btn-export" class="btn-premium success">
+                    <i class="fas fa-file-excel"></i> Export Excel
+                </button>
+                <select id="sort-select" class="select-premium">
                     <option value="time-desc">Waktu (Terbaru)</option>
                     <option value="time-asc">Waktu (Terlama)</option>
                     <option value="score-desc">Nilai (Tertinggi)</option>
                     <option value="score-asc">Nilai (Terendah)</option>
                 </select>
             </div>
-            <button id="btn-clear" class="btn-danger" style="width: auto; display: flex; align-items: center; gap: 8px;"><i class="fas fa-trash-alt"></i> Hapus Semua Data</button>
+            <button id="btn-clear" class="btn-premium danger">
+                <i class="fas fa-trash-alt"></i> Hapus Semua Data
+            </button>
         </div>
 
         <div class="table-container">
@@ -36,11 +48,9 @@
                         <th>Waktu Selesai</th>
                         <th>No. Absen</th>
                         <th>Nama Siswa</th>
-                        <th>Jml Benar</th>
-                        <th>Jml Salah</th>
-                        <th>Nilai Benar</th>
-                        <th>Nilai Salah</th>
-                        <th>Nilai Total</th>
+                        <th>Benar</th>
+                        <th>Salah</th>
+                        <th>Total Nilai</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -49,11 +59,23 @@
                 </tbody>
             </table>
         </div>
-        
-        <div style="margin-top: 20px; text-align: center;">
-            <a href="index.html" style="color: var(--primary); text-decoration: none;">&larr; Kembali ke Kuis</a>
+    </div>
+
+    <!-- Modal for Detailed Answers -->
+    <div class="modal-overlay" id="detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Analisis Jawaban: <span id="modal-student-name" style="color: var(--primary-color);"></span></h2>
+                <button class="btn-close" id="btn-close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="answers-grid" id="modal-answers-container">
+                    <!-- Answers will be populated here -->
+                </div>
+            </div>
         </div>
     </div>
+
     <script src="node_modules/xlsx/dist/xlsx.full.min.js"></script>
     <script src="node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
     <script src="admin.js"></script>
