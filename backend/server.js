@@ -6,7 +6,7 @@ const { open } = require('sqlite');
 const jwt = require('jsonwebtoken');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3005;
 const JWT_SECRET = 'rahasia_guru_123';
 const ADMIN_PASSWORD = 'guru123';
 
