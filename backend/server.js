@@ -239,6 +239,11 @@ app.delete('/api/results/:id', verifyToken, async (req, res) => {
     }
 });
 
+// Fallback route for 404 (Page Not Found)
+app.use((req, res) => {
+    res.status(404).sendFile(path.join(__dirname, '../404.html'));
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
