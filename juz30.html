@@ -70,6 +70,39 @@
         }
         /* Import Google font for Arabic */
         @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+        
+        /* Mushaf Mode Styles */
+        .mushaf-mode {
+            text-align: justify;
+            direction: rtl;
+            padding: 40px 30px !important;
+            line-height: 2.8;
+            font-size: 1.1rem;
+        }
+        .mushaf-mode .ayah {
+            display: inline;
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+        .mushaf-mode .ayah-arabic {
+            display: inline;
+            line-height: inherit;
+        }
+        .mushaf-mode .ayah-translation {
+            display: none;
+        }
+        .mushaf-mode .ayah-number {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 32px;
+            height: 32px;
+            margin: 0 8px;
+            font-size: 0.9rem;
+            line-height: 1;
+        }
     </style>
 </head>
 <body>
@@ -84,9 +117,10 @@
             <div class="surah-title">
                 <h1 id="surah-name-ar">Nama Surah</h1>
                 <p id="surah-name-id">Arti Surah</p>
-                <div style="margin-top: 15px;">
+                <div style="margin-top: 15px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
                     <button onclick="location.reload()" class="btn-primary" style="width: auto; padding: 10px 20px; font-size: 1rem;"><i class="fas fa-random"></i> Acak Surah Lain</button>
-                    <a href="index.html" class="btn-primary" style="background: var(--secondary); text-decoration: none; width: auto; padding: 10px 20px; font-size: 1rem; display: inline-block; margin-left: 10px;"><i class="fas fa-arrow-left"></i> Kembali ke Kuis</a>
+                    <button id="toggle-mushaf" class="btn-primary" style="background: var(--success); width: auto; padding: 10px 20px; font-size: 1rem;"><i class="fas fa-book-open"></i> Mode Mushaf</button>
+                    <a href="index.html" class="btn-primary" style="background: var(--secondary); text-decoration: none; width: auto; padding: 10px 20px; font-size: 1rem; display: inline-block;"><i class="fas fa-arrow-left"></i> Kembali ke Kuis</a>
                 </div>
             </div>
             
@@ -126,7 +160,11 @@
                 document.getElementById('surah-content').style.display = 'block';
 
                 document.getElementById('surah-name-ar').textContent = surahAr.name;
-                document.getElementById('surah-name-id').textContent = `${surahAr.englishName} (${surahId.englishNameTranslation}) - ${surahAr.numberOfAyahs} Ayat`;
+                const surahTranslationsId = {
+                    78: "Berita Besar", 79: "Malaikat-Malaikat Yang Mencabut", 80: "Bermuka Masam", 81: "Menggulung", 82: "Terbelah", 83: "Orang-Orang Yang Curang", 84: "Terbelah", 85: "Gugusan Bintang", 86: "Yang Datang Di Malam Hari", 87: "Yang Paling Tinggi", 88: "Hari Pembalasan", 89: "Fajar", 90: "Negeri", 91: "Matahari", 92: "Malam", 93: "Waktu Dhuha", 94: "Pelapangan Dada", 95: "Buah Tin", 96: "Segumpal Darah", 97: "Kemuliaan", 98: "Pembuktian", 99: "Kegoncangan", 100: "Berlari Kencang", 101: "Hari Kiamat", 102: "Bermegah-Megahan", 103: "Masa/Waktu", 104: "Pengumpat", 105: "Gajah", 106: "Suku Quraisy", 107: "Barang Berguna", 108: "Nikmat Yang Berlimpah", 109: "Orang-Orang Kafir", 110: "Pertolongan", 111: "Gejolak Api", 112: "Keesaan Allah", 113: "Waktu Subuh", 114: "Manusia"
+                };
+                const indoName = surahTranslationsId[surahAr.number] || "";
+                document.getElementById('surah-name-id').textContent = `${surahAr.englishName} (${surahId.englishNameTranslation} / ${indoName}) - ${surahAr.numberOfAyahs} Ayat`;
 
                 const ayahsList = document.getElementById('ayahs-list');
                 let html = '';
@@ -146,9 +184,10 @@
                     let ayahNum = surahAr.ayahs[i].numberInSurah;
 
                     // Remove Bismillah from the first verse if it's there (api.alquran.cloud prepends it)
-                    if (i === 0 && randomSurahId !== 1) {
+                    if (i === 0 && randomSurahId !== 1 && randomSurahId !== 9) {
                         arabicText = arabicText.replace('بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ ', '');
                         arabicText = arabicText.replace('بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ', '');
+                        arabicText = arabicText.replace('بِّسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ ', ''); // Special case with shadda
                     }
 
                     html += `
@@ -165,6 +204,20 @@
 
                 ayahsList.innerHTML = html;
             }
+
+            // Toggle Mushaf Mode
+            document.getElementById('toggle-mushaf').addEventListener('click', function() {
+                const list = document.getElementById('ayahs-list');
+                list.classList.toggle('mushaf-mode');
+                
+                if (list.classList.contains('mushaf-mode')) {
+                    this.innerHTML = '<i class="fas fa-list"></i> Mode Terjemahan';
+                    this.style.background = '#f59e0b'; // warning color
+                } else {
+                    this.innerHTML = '<i class="fas fa-book-open"></i> Mode Mushaf';
+                    this.style.background = 'var(--success)';
+                }
+            });
         });
     </script>
 </body>
