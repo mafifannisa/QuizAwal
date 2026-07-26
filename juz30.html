@@ -71,6 +71,34 @@
         /* Import Google font for Arabic */
         @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
         
+        /* Tajweed Colors */
+        .tajweed { transition: color 0.3s; }
+        .show-tajweed .tajweed-h, .show-tajweed .tajweed-s, .show-tajweed .tajweed-l, .show-tajweed .tajweed-d, .show-tajweed .tajweed-b { color: #94a3b8; } /* Abu-abu: Tidak dibaca / Idgham Bila Ghunnah */
+        .show-tajweed .tajweed-n, .show-tajweed .tajweed-m, .show-tajweed .tajweed-p { color: #10b981; } /* Hijau: Dengung / Idgham Bighunnah */
+        .show-tajweed .tajweed-g { color: #f59e0b; } /* Oranye: Ghunnah Musyaddadah */
+        .show-tajweed .tajweed-f, .show-tajweed .tajweed-c { color: #ef4444; } /* Merah: Ikhfa */
+        .show-tajweed .tajweed-q { color: #0ea5e9; } /* Biru Muda: Qalqalah */
+        .show-tajweed .tajweed-o { color: #d946ef; } /* Ungu: Mad / Panjang */
+        .show-tajweed .tajweed-i { color: #3b82f6; } /* Biru Tua: Iqlab */
+
+        /* Tajweed Legend */
+        .tajweed-legend {
+            display: none;
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+        .show-tajweed ~ .tajweed-legend {
+            display: flex;
+        }
+        .legend-item { display: flex; align-items: center; gap: 6px; }
+        .legend-color { width: 14px; height: 14px; border-radius: 3px; }
+
         /* Mushaf Mode Styles */
         .mushaf-mode {
             text-align: justify;
@@ -119,6 +147,7 @@
                 <p id="surah-name-id">Arti Surah</p>
                 <div style="margin-top: 15px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
                     <button onclick="location.reload()" class="btn-primary" style="width: auto; padding: 10px 20px; font-size: 1rem;"><i class="fas fa-random"></i> Acak Surah Lain</button>
+                    <button id="toggle-tajweed" class="btn-primary" style="background: #3b82f6; width: auto; padding: 10px 20px; font-size: 1rem;"><i class="fas fa-magic"></i> Tampilkan Tajwid</button>
                     <button id="toggle-mushaf" class="btn-primary" style="background: var(--success); width: auto; padding: 10px 20px; font-size: 1rem;"><i class="fas fa-book-open"></i> Mode Mushaf</button>
                     <a href="index.html" class="btn-primary" style="background: var(--secondary); text-decoration: none; width: auto; padding: 10px 20px; font-size: 1rem; display: inline-block;"><i class="fas fa-arrow-left"></i> Kembali ke Kuis</a>
                 </div>
@@ -126,6 +155,16 @@
             
             <div id="ayahs-list" class="surah-container">
                 <!-- Ayat akan dimuat di sini -->
+            </div>
+
+            <div class="tajweed-legend">
+                <div class="legend-item"><div class="legend-color" style="background: #94a3b8;"></div> Abu: Tidak dibaca / Lebur</div>
+                <div class="legend-item"><div class="legend-color" style="background: #10b981;"></div> Hijau: Dengung (Idgham)</div>
+                <div class="legend-item"><div class="legend-color" style="background: #f59e0b;"></div> Oranye: Ghunnah</div>
+                <div class="legend-item"><div class="legend-color" style="background: #ef4444;"></div> Merah: Samar (Ikhfa)</div>
+                <div class="legend-item"><div class="legend-color" style="background: #0ea5e9;"></div> Biru Muda: Pantulan (Qalqalah)</div>
+                <div class="legend-item"><div class="legend-color" style="background: #d946ef;"></div> Ungu: Panjang (Mad)</div>
+                <div class="legend-item"><div class="legend-color" style="background: #3b82f6;"></div> Biru Tua: Iqlab</div>
             </div>
         </div>
         
@@ -138,8 +177,8 @@
             const maxSurah = 114;
             const randomSurahId = Math.floor(Math.random() * (maxSurah - minSurah + 1)) + minSurah;
 
-            // Fetch Arabic text
-            fetch(`https://api.alquran.cloud/v1/surah/${randomSurahId}`)
+            // Fetch Arabic text with Tajweed
+            fetch(`https://api.alquran.cloud/v1/surah/${randomSurahId}/quran-tajweed`)
                 .then(response => response.json())
                 .then(dataAr => {
                     // Fetch Indonesian translation
@@ -183,12 +222,8 @@
                     let indoText = surahId.ayahs[i].text;
                     let ayahNum = surahAr.ayahs[i].numberInSurah;
 
-                    // Remove Bismillah from the first verse if it's there (api.alquran.cloud prepends it)
-                    if (i === 0 && randomSurahId !== 1 && randomSurahId !== 9) {
-                        arabicText = arabicText.replace('بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ ', '');
-                        arabicText = arabicText.replace('بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ', '');
-                        arabicText = arabicText.replace('بِّسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ ', ''); // Special case with shadda
-                    }
+                    // Parse Tajweed tags to HTML spans
+                    arabicText = arabicText.replace(/\[([a-z])(:[0-9]+)?\[(.*?)\]/g, '<span class="tajweed tajweed-$1">$3</span>');
 
                     html += `
                         <div class="ayah">
@@ -216,6 +251,20 @@
                 } else {
                     this.innerHTML = '<i class="fas fa-book-open"></i> Mode Mushaf';
                     this.style.background = 'var(--success)';
+                }
+            });
+
+            // Toggle Tajweed
+            document.getElementById('toggle-tajweed').addEventListener('click', function() {
+                const list = document.getElementById('ayahs-list');
+                list.classList.toggle('show-tajweed');
+                
+                if (list.classList.contains('show-tajweed')) {
+                    this.innerHTML = '<i class="fas fa-magic"></i> Sembunyikan Tajwid';
+                    this.style.background = '#64748b'; // slate color
+                } else {
+                    this.innerHTML = '<i class="fas fa-magic"></i> Tampilkan Tajwid';
+                    this.style.background = '#3b82f6'; // primary blue
                 }
             });
         });
