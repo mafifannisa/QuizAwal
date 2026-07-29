@@ -43,8 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Store data locally for modal access
     let globalData = [];
 
-    function fetchResults() {
-        resultsBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Memuat data...</td></tr>';
+    function fetchResults(silent = false) {
+        if (!silent) {
+            resultsBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Memuat data...</td></tr>';
+        }
         
         fetch(API_URL, {
             headers: {
@@ -65,7 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => {
                 console.error('Error fetching results:', error);
-                resultsBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--danger-color);">Gagal memuat data dari server. Pastikan server berjalan.</td></tr>';
+                if (!silent) {
+                    resultsBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--danger-color);">Gagal memuat data dari server. Pastikan server berjalan.</td></tr>';
+                }
             });
     }
 
@@ -264,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
         XLSX.writeFile(wb, "Rekap_Nilai_Ujian_Matematika.xlsx");
     }
 
-    btnRefresh.addEventListener('click', fetchResults);
+    btnRefresh.addEventListener('click', () => fetchResults(false));
     btnClear.addEventListener('click', clearResults);
     btnExport.addEventListener('click', exportToExcel);
     
@@ -357,6 +361,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial load
     fetchResults();
     
-    // Auto-refresh setiap 10 detik
-    setInterval(fetchResults, 10000);
+    // Auto-refresh setiap 10 detik secara silent agar tidak flicker
+    setInterval(() => fetchResults(true), 10000);
 });

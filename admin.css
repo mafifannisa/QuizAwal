@@ -118,6 +118,13 @@ body {
     box-shadow: var(--shadow-md);
 }
 
+.btn-premium:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: var(--shadow-sm) !important;
+}
+
 .btn-icon {
     padding: 6px;
     background: transparent;
@@ -168,6 +175,8 @@ body {
     background: rgba(0, 0, 0, 0.2);
     border-radius: var(--radius-md);
     overflow-x: auto;
+    overflow-y: auto;
+    max-height: 55vh;
     box-shadow: var(--shadow-sm);
     border: 1px solid rgba(255,255,255,0.05);
 }
@@ -190,6 +199,10 @@ th {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     border-bottom: 2px solid rgba(255,255,255,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #0f172a;
 }
 
 td {
