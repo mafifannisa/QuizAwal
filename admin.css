@@ -22,15 +22,23 @@ body {
     background: var(--bg-gradient);
     color: var(--text-main);
     font-family: 'Outfit', sans-serif;
-    display: block;
-    overflow: auto;
-    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .admin-panel {
+    width: 100%;
     max-width: 1200px !important;
-    width: 95%;
-    margin: 40px auto;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
     background: var(--panel-bg);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
@@ -38,15 +46,17 @@ body {
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
     padding: 30px;
+    margin: 0;
 }
 
 .admin-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     border-bottom: 1px solid rgba(255,255,255,0.1);
     padding-bottom: 20px;
+    flex-shrink: 0;
 }
 
 .admin-header h1 {
@@ -66,9 +76,10 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     gap: 15px;
     flex-wrap: wrap;
+    flex-shrink: 0;
 }
 
 .action-group {
@@ -179,7 +190,8 @@ body {
     border-radius: var(--radius-md);
     overflow-x: auto;
     overflow-y: auto;
-    max-height: 55vh;
+    flex: 1; /* Automatically takes up remaining height */
+    min-height: 0; /* Important for flex child with overflow */
     box-shadow: var(--shadow-sm);
     border: 1px solid rgba(255,255,255,0.05);
 }
@@ -224,6 +236,14 @@ tbody tr:hover {
 
 tbody tr:last-child td {
     border-bottom: none;
+}
+
+.pagination-container {
+    flex-shrink: 0;
+}
+
+.admin-panel > p {
+    flex-shrink: 0;
 }
 
 /* Modal Styles */
